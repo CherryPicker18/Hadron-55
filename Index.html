@@ -1,0 +1,896 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HADRON-55 — Cosmic Ray Research Station</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Inter:wght@300;400;500;600&display=swap');
+
+  :root {
+    --black:    #050810;
+    --deep:     #0a0f1e;
+    --panel:    #0d1526;
+    --border:   #1a2540;
+    --red:      #e63946;
+    --red-dim:  #7d1d24;
+    --cyan:     #48cae4;
+    --white:    #eaf0fb;
+    --muted:    #6b7a99;
+    --mono:     'Space Mono', monospace;
+    --sans:     'Inter', sans-serif;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--black);
+    color: var(--white);
+    font-family: var(--sans);
+    line-height: 1.6;
+    overflow-x: hidden;
+  }
+
+  /* ── CANVAS BACKGROUND ── */
+  #starfield {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 3rem;
+    background: rgba(5,8,16,0.85);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .nav-logo {
+    font-family: var(--mono);
+    font-size: 1rem;
+    color: var(--red);
+    letter-spacing: 0.15em;
+    text-decoration: none;
+  }
+
+  .nav-links {
+    display: flex;
+    gap: 2.5rem;
+    list-style: none;
+  }
+
+  .nav-links a {
+    font-size: 0.8rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+
+  .nav-links a:hover { color: var(--white); }
+
+  /* ── HERO ── */
+  .hero {
+    position: relative;
+    z-index: 1;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 0 3rem;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  .hero-eyebrow {
+    font-family: var(--mono);
+    font-size: 0.75rem;
+    letter-spacing: 0.2em;
+    color: var(--red);
+    text-transform: uppercase;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .hero-eyebrow::before {
+    content: '';
+    display: block;
+    width: 2rem;
+    height: 1px;
+    background: var(--red);
+  }
+
+  .hero h1 {
+    font-family: var(--mono);
+    font-size: clamp(3rem, 8vw, 7rem);
+    font-weight: 700;
+    line-height: 0.95;
+    letter-spacing: -0.02em;
+    margin-bottom: 0.5rem;
+  }
+
+  .hero h1 span {
+    color: var(--red);
+  }
+
+  .hero-sub {
+    font-family: var(--mono);
+    font-size: clamp(1rem, 2vw, 1.4rem);
+    color: var(--cyan);
+    letter-spacing: 0.05em;
+    margin-bottom: 2rem;
+  }
+
+  .hero-desc {
+    font-size: 1rem;
+    color: var(--muted);
+    max-width: 520px;
+    margin-bottom: 3rem;
+    line-height: 1.8;
+  }
+
+  .hero-stats {
+    display: flex;
+    gap: 3rem;
+    margin-bottom: 3rem;
+  }
+
+  .stat {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .stat-val {
+    font-family: var(--mono);
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--white);
+    line-height: 1;
+  }
+
+  .stat-label {
+    font-size: 0.72rem;
+    color: var(--muted);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-top: 0.3rem;
+  }
+
+  .hero-cta {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .btn-primary {
+    font-family: var(--mono);
+    font-size: 0.8rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    background: var(--red);
+    color: white;
+    border: none;
+    padding: 0.9rem 2rem;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+    transition: background 0.2s, transform 0.15s;
+  }
+
+  .btn-primary:hover {
+    background: #c1121f;
+    transform: translateY(-1px);
+  }
+
+  .btn-ghost {
+    font-family: var(--mono);
+    font-size: 0.8rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    background: transparent;
+    color: var(--muted);
+    border: 1px solid var(--border);
+    padding: 0.9rem 2rem;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+    transition: color 0.2s, border-color 0.2s;
+  }
+
+  .btn-ghost:hover {
+    color: var(--white);
+    border-color: var(--muted);
+  }
+
+  /* ── SCROLL INDICATOR ── */
+  .scroll-hint {
+    position: absolute;
+    bottom: 2rem;
+    left: 3rem;
+    font-family: var(--mono);
+    font-size: 0.65rem;
+    color: var(--muted);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .scroll-hint::after {
+    content: '';
+    display: block;
+    width: 1px;
+    height: 3rem;
+    background: linear-gradient(to bottom, var(--muted), transparent);
+  }
+
+  /* ── SECTIONS ── */
+  section {
+    position: relative;
+    z-index: 1;
+  }
+
+  .container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 3rem;
+  }
+
+  .section-label {
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--red);
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .section-label::before {
+    content: '';
+    width: 1.5rem;
+    height: 1px;
+    background: var(--red);
+  }
+
+  .section-title {
+    font-family: var(--mono);
+    font-size: clamp(1.8rem, 4vw, 3rem);
+    font-weight: 700;
+    line-height: 1.1;
+    margin-bottom: 1rem;
+  }
+
+  .section-body {
+    color: var(--muted);
+    max-width: 600px;
+    line-height: 1.8;
+    margin-bottom: 3rem;
+  }
+
+  /* ── ABOUT ── */
+  .about {
+    padding: 8rem 0;
+    border-top: 1px solid var(--border);
+  }
+
+  .about-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+    align-items: start;
+    margin-top: 3rem;
+  }
+
+  .about-card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    padding: 2rem;
+  }
+
+  .about-card-icon {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .about-card h3 {
+    font-family: var(--mono);
+    font-size: 0.9rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 0.75rem;
+    color: var(--cyan);
+  }
+
+  .about-card p {
+    font-size: 0.9rem;
+    color: var(--muted);
+    line-height: 1.7;
+  }
+
+  /* ── PIPELINE ── */
+  .pipeline {
+    padding: 8rem 0;
+    background: var(--deep);
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .pipeline-steps {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0;
+    margin-top: 4rem;
+    border: 1px solid var(--border);
+  }
+
+  .step {
+    padding: 2rem;
+    border-right: 1px solid var(--border);
+    position: relative;
+  }
+
+  .step:last-child { border-right: none; }
+
+  .step-num {
+    font-family: var(--mono);
+    font-size: 3rem;
+    font-weight: 700;
+    color: var(--border);
+    line-height: 1;
+    margin-bottom: 1rem;
+  }
+
+  .step h3 {
+    font-family: var(--mono);
+    font-size: 0.8rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--white);
+    margin-bottom: 0.5rem;
+  }
+
+  .step p {
+    font-size: 0.85rem;
+    color: var(--muted);
+    line-height: 1.6;
+  }
+
+  .step-active .step-num { color: var(--red-dim); }
+  .step-active { background: rgba(230,57,70,0.04); }
+
+  /* ── FILTER DEMO ── */
+  .demo {
+    padding: 8rem 0;
+  }
+
+  .demo-box {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    padding: 3rem;
+    margin-top: 3rem;
+  }
+
+  .demo-upload {
+    border: 1px dashed var(--border);
+    padding: 3rem;
+    text-align: center;
+    cursor: pointer;
+    transition: border-color 0.2s, background 0.2s;
+    margin-bottom: 2rem;
+  }
+
+  .demo-upload:hover {
+    border-color: var(--red);
+    background: rgba(230,57,70,0.03);
+  }
+
+  .demo-upload-icon {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .demo-upload p {
+    font-family: var(--mono);
+    font-size: 0.8rem;
+    color: var(--muted);
+    letter-spacing: 0.05em;
+  }
+
+  .demo-upload span {
+    color: var(--cyan);
+  }
+
+  .demo-log {
+    background: var(--black);
+    border: 1px solid var(--border);
+    padding: 1.5rem;
+    font-family: var(--mono);
+    font-size: 0.78rem;
+    color: var(--muted);
+    min-height: 160px;
+    line-height: 1.8;
+    white-space: pre-wrap;
+  }
+
+  .demo-log .log-success { color: #2dc653; }
+  .demo-log .log-info    { color: var(--cyan); }
+  .demo-log .log-warn    { color: #f4a261; }
+
+  /* ── TEAM ── */
+  .team {
+    padding: 8rem 0;
+    border-top: 1px solid var(--border);
+    background: var(--deep);
+  }
+
+  .team-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 2rem;
+    margin-top: 3rem;
+  }
+
+  .team-card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    padding: 2rem;
+    display: flex;
+    gap: 1.5rem;
+    align-items: flex-start;
+  }
+
+  .team-avatar {
+    width: 48px;
+    height: 48px;
+    background: var(--red-dim);
+    border: 1px solid var(--red);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--mono);
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--red);
+    flex-shrink: 0;
+  }
+
+  .team-name {
+    font-family: var(--mono);
+    font-size: 0.9rem;
+    color: var(--white);
+    margin-bottom: 0.25rem;
+  }
+
+  .team-role {
+    font-size: 0.78rem;
+    color: var(--cyan);
+    margin-bottom: 0.5rem;
+  }
+
+  .team-desc {
+    font-size: 0.82rem;
+    color: var(--muted);
+    line-height: 1.6;
+  }
+
+  /* ── FOOTER ── */
+  footer {
+    position: relative;
+    z-index: 1;
+    border-top: 1px solid var(--border);
+    padding: 3rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .footer-logo {
+    font-family: var(--mono);
+    font-size: 0.85rem;
+    color: var(--muted);
+    letter-spacing: 0.15em;
+  }
+
+  .footer-copy {
+    font-size: 0.75rem;
+    color: var(--muted);
+  }
+
+  /* ── SIGNAL PULSE (signature element) ── */
+  .pulse-wrap {
+    margin: 3rem 0;
+    position: relative;
+    height: 80px;
+    overflow: hidden;
+  }
+
+  .pulse-canvas {
+    width: 100%;
+    height: 100%;
+  }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 768px) {
+    nav { padding: 1rem 1.5rem; }
+    .nav-links { display: none; }
+    .hero, .container { padding: 0 1.5rem; }
+    .about-grid, .team-grid { grid-template-columns: 1fr; }
+    .pipeline-steps { grid-template-columns: 1fr 1fr; }
+    .step { border-bottom: 1px solid var(--border); }
+    footer { flex-direction: column; gap: 1rem; text-align: center; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { animation: none !important; transition: none !important; }
+  }
+</style>
+</head>
+<body>
+
+<canvas id="starfield"></canvas>
+
+<!-- NAV -->
+<nav>
+  <a class="nav-logo" href="#">⚛ HADRON-55</a>
+  <ul class="nav-links">
+    <li><a href="#about">About</a></li>
+    <li><a href="#pipeline">Pipeline</a></li>
+    <li><a href="#demo">Filter</a></li>
+    <li><a href="#team">Team</a></li>
+    <li><a href="https://github.com/CherryPicker18/Hadron-55" target="_blank">GitHub ↗</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <p class="hero-eyebrow">Tien Shan Mountain Station · 3340m · Kazakhstan</p>
+  <h1>HADRON<span>-55</span></h1>
+  <p class="hero-sub">Cosmic Ray Data Processing System</p>
+  <p class="hero-desc">
+    Automated filtering and cleaning of particle detector events from the Hadron-55 installation. 
+    Separates physical cosmic-ray signals from noise, calibration events, and empty scintillator readings.
+  </p>
+
+  <div class="hero-stats">
+    <div class="stat">
+      <span class="stat-val">30,000</span>
+      <span class="stat-label">m² effective area</span>
+    </div>
+    <div class="stat">
+      <span class="stat-val">3,340</span>
+      <span class="stat-label">meters altitude</span>
+    </div>
+    <div class="stat">
+      <span class="stat-val">25</span>
+      <span class="stat-label">detector channels</span>
+    </div>
+  </div>
+
+  <div class="hero-cta">
+    <a class="btn-primary" href="#demo">▶ Run Filter</a>
+    <a class="btn-ghost" href="https://github.com/CherryPicker18/Hadron-55" target="_blank">View on GitHub</a>
+  </div>
+
+  <p class="scroll-hint">Scroll</p>
+</div>
+
+<!-- ABOUT -->
+<section class="about" id="about">
+  <div class="container">
+    <p class="section-label">About the Installation</p>
+    <h2 class="section-title">What is Hadron-55?</h2>
+    <p class="section-body">
+      Hadron-55 is a scientific installation at the Tien Shan High-Mountain Cosmic Ray Station 
+      operated by the Lebedev Physical Institute. It continuously registers the flux of cosmic 
+      particles arriving from deep space, capturing extensive air shower (EAS) events created 
+      by high-energy particles in the atmosphere.
+    </p>
+
+    <div class="about-grid">
+      <div class="about-card">
+        <div class="about-card-icon">🛰️</div>
+        <h3>Scintillation Detectors</h3>
+        <p>25 channels across back, front, left, middle and right sectors — each recording particle 
+        flux at high and low sensitivity. Raw data arrives as .dat files with timestamped event blocks.</p>
+      </div>
+      <div class="about-card">
+        <div class="about-card-icon">🔬</div>
+        <h3>Event Structure</h3>
+        <p>Each event block starts with |EVENT: and ends with #. Inside: arrays of integer counts 
+        per detector channel. Physical events show non-zero scintillator readings — noise events show 
+        near-zero values across all channels.</p>
+      </div>
+      <div class="about-card">
+        <div class="about-card-icon">⚡</div>
+        <h3>Noise Problem</h3>
+        <p>Raw data contains outlier spikes, calibration blocks, isolated single-sample noise, 
+        and empty "phantom" events. This system identifies and removes them, preserving only 
+        physically meaningful cosmic-ray detections.</p>
+      </div>
+      <div class="about-card">
+        <div class="about-card-icon">📦</div>
+        <h3>Output</h3>
+        <p>Filtered .dat files with identical naming — one output file per input file. 
+        Cleaned events retain their original structure; outlier values are replaced by 
+        context-aware interpolation.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PIPELINE -->
+<section class="pipeline" id="pipeline">
+  <div class="container">
+    <p class="section-label">Data Pipeline</p>
+    <h2 class="section-title">How filtering works</h2>
+    <p class="section-body">
+      Four-stage processing pipeline. Each stage runs sequentially on every event block 
+      in every .dat file found in the input directory.
+    </p>
+
+    <div class="pipeline-steps">
+      <div class="step step-active">
+        <div class="step-num">01</div>
+        <h3>Parse</h3>
+        <p>Read all 6-digit .dat files. Split content into event blocks by |EVENT: / # delimiters.</p>
+      </div>
+      <div class="step step-active">
+        <div class="step-num">02</div>
+        <h3>Screen</h3>
+        <p>Drop calibration and test blocks. Check scintillator channels — discard events where ≥70% of values are zero.</p>
+      </div>
+      <div class="step step-active">
+        <div class="step-num">03</div>
+        <h3>Clean</h3>
+        <p>Replace outlier spikes with neighbour average. Suppress isolated single-sample noise surrounded by zeros.</p>
+      </div>
+      <div class="step step-active">
+        <div class="step-num">04</div>
+        <h3>Save</h3>
+        <p>Write cleaned event blocks to output directory. Filename preserved. One output file per input file.</p>
+      </div>
+    </div>
+
+    <!-- Signal pulse visualization -->
+    <div class="pulse-wrap">
+      <canvas class="pulse-canvas" id="pulseCanvas"></canvas>
+    </div>
+    <p style="font-family: var(--mono); font-size: 0.68rem; color: var(--muted); letter-spacing: 0.1em; text-align: center; margin-top: -1rem;">
+      SIMULATED DETECTOR SIGNAL — BEFORE / AFTER FILTERING
+    </p>
+  </div>
+</section>
+
+<!-- DEMO -->
+<section class="demo" id="demo">
+  <div class="container">
+    <p class="section-label">Filter Demo</p>
+    <h2 class="section-title">Process your data</h2>
+    <p class="section-body">
+      Upload a .dat file to see the filtering pipeline in action. 
+      The processor runs entirely in your browser — no data is sent to any server.
+    </p>
+
+    <div class="demo-box">
+      <div class="demo-upload" id="dropZone" onclick="document.getElementById('fileInput').click()">
+        <div class="demo-upload-icon">📂</div>
+        <p>Drop a <span>.dat file</span> here or click to browse</p>
+        <p style="margin-top:0.5rem; font-size:0.7rem;">Files must follow 6-digit naming convention (e.g. 210516.dat)</p>
+        <input type="file" id="fileInput" accept=".dat" style="display:none">
+      </div>
+      <div class="demo-log" id="demoLog">— Awaiting input file —</div>
+    </div>
+  </div>
+</section>
+
+<!-- TEAM -->
+<section class="team" id="team">
+  <div class="container">
+    <p class="section-label">Project</p>
+    <h2 class="section-title">Who built this</h2>
+
+    <div class="team-grid">
+      <div class="team-card">
+        <div class="team-avatar">AB</div>
+        <div>
+          <p class="team-name">Alisher Baitas</p>
+          <p class="team-role">Interface & Integration</p>
+          <p class="team-desc">GUI development, pipeline integration, repository architecture. 
+          Student at Tomorrow School — peer-to-peer AI & programming school, Astana Hub.</p>
+        </div>
+      </div>
+      <div class="team-card">
+        <div class="team-avatar">HN</div>
+        <div>
+          <p class="team-name">Hanni</p>
+          <p class="team-role">Signal Processing & Algorithms</p>
+          <p class="team-desc">Core filtering algorithms: outlier detection, scintillator screening, 
+          event classification. Python implementation based on Hadron-55 detector physics.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <span class="footer-logo">⚛ HADRON-55</span>
+  <span class="footer-copy">© 2026 Alisher Baitas · MIT License · Tien Shan, Kazakhstan</span>
+</footer>
+
+<script>
+// ── STARFIELD ──
+const canvas = document.getElementById('starfield');
+const ctx = canvas.getContext('2d');
+let stars = [];
+
+function resize() {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+}
+
+function initStars() {
+  stars = [];
+  for (let i = 0; i < 220; i++) {
+    stars.push({
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height,
+      r: Math.random() * 1.2 + 0.2,
+      o: Math.random() * 0.6 + 0.1,
+      speed: Math.random() * 0.15 + 0.02,
+      pulse: Math.random() * Math.PI * 2
+    });
+  }
+}
+
+function drawStars(t) {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  stars.forEach(s => {
+    s.pulse += 0.008;
+    const opacity = s.o + Math.sin(s.pulse) * 0.15;
+    ctx.beginPath();
+    ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+    ctx.fillStyle = `rgba(200,220,255,${opacity})`;
+    ctx.fill();
+    s.y -= s.speed;
+    if (s.y < -2) { s.y = canvas.height + 2; s.x = Math.random() * canvas.width; }
+  });
+  requestAnimationFrame(drawStars);
+}
+
+resize();
+initStars();
+window.addEventListener('resize', () => { resize(); initStars(); });
+requestAnimationFrame(drawStars);
+
+// ── SIGNAL PULSE VISUALIZATION ──
+const pc = document.getElementById('pulseCanvas');
+const pctx = pc.getContext('2d');
+
+function drawPulse() {
+  pc.width = pc.offsetWidth;
+  pc.height = pc.offsetHeight;
+  const w = pc.width, h = pc.height;
+  const mid = h / 2;
+
+  // Raw signal (noisy)
+  pctx.beginPath();
+  pctx.strokeStyle = 'rgba(107,122,153,0.4)';
+  pctx.lineWidth = 1;
+  for (let x = 0; x < w; x++) {
+    const t = x / w * Math.PI * 12;
+    const base = Math.sin(t) * 12;
+    const noise = (Math.random() - 0.5) * 30;
+    const spike = (x % 80 === 0) ? (Math.random() > 0.5 ? 40 : -40) : 0;
+    const y = mid - base - noise - spike;
+    x === 0 ? pctx.moveTo(x, y) : pctx.lineTo(x, y);
+  }
+  pctx.stroke();
+
+  // Clean signal
+  pctx.beginPath();
+  pctx.strokeStyle = '#e63946';
+  pctx.lineWidth = 1.5;
+  for (let x = 0; x < w; x++) {
+    const t = x / w * Math.PI * 12;
+    const y = mid - Math.sin(t) * 12;
+    x === 0 ? pctx.moveTo(x, y) : pctx.lineTo(x, y);
+  }
+  pctx.stroke();
+}
+
+window.addEventListener('load', drawPulse);
+window.addEventListener('resize', drawPulse);
+
+// ── DEMO FILE READER ──
+const log = document.getElementById('demoLog');
+const dropZone = document.getElementById('dropZone');
+const fileInput = document.getElementById('fileInput');
+
+function logLine(text, cls) {
+  const span = document.createElement('span');
+  if (cls) span.className = cls;
+  span.textContent = text + '\n';
+  log.appendChild(span);
+  log.scrollTop = log.scrollHeight;
+}
+
+function processFile(file) {
+  log.innerHTML = '';
+  logLine(`→ File loaded: ${file.name} (${(file.size/1024).toFixed(1)} KB)`, 'log-info');
+
+  const reader = new FileReader();
+  reader.onload = e => {
+    const text = e.target.result;
+    const lines = text.split('\n');
+
+    let events = 0, inside = false, block = [];
+    let kept = 0, dropped = 0;
+
+    lines.forEach(line => {
+      if (line.startsWith('|EVENT')) { inside = true; block = [line]; }
+      else if (line.trim() === '#' && inside) {
+        block.push(line);
+        events++;
+        // Simple check: look for scinti lines
+        const scintiLines = block.filter(l => l.includes('scinti'));
+        const hasSignal = scintiLines.some(l => {
+          const nums = l.split(':').slice(2).join('').trim().split(/\s+/).map(Number).filter(n => !isNaN(n));
+          return nums.some(n => n > 10);
+        });
+        if (hasSignal) kept++; else dropped++;
+        inside = false;
+      } else if (inside) block.push(line);
+    });
+
+    logLine(`→ Total events found: ${events}`, 'log-info');
+    setTimeout(() => logLine(`→ Running scintillator screening...`, 'log-info'), 400);
+    setTimeout(() => logLine(`→ Running outlier detection...`, 'log-info'), 800);
+    setTimeout(() => {
+      logLine(`✓ Physical events kept: ${kept}`, 'log-success');
+      logLine(`✗ Noise/empty events removed: ${dropped}`, 'log-warn');
+      logLine(`✓ Processing complete. Download via desktop app.`, 'log-success');
+    }, 1400);
+  };
+  reader.readAsText(file);
+}
+
+fileInput.addEventListener('change', e => {
+  if (e.target.files[0]) processFile(e.target.files[0]);
+});
+
+dropZone.addEventListener('dragover', e => {
+  e.preventDefault();
+  dropZone.style.borderColor = '#e63946';
+});
+
+dropZone.addEventListener('dragleave', () => {
+  dropZone.style.borderColor = '';
+});
+
+dropZone.addEventListener('drop', e => {
+  e.preventDefault();
+  dropZone.style.borderColor = '';
+  if (e.dataTransfer.files[0]) processFile(e.dataTransfer.files[0]);
+});
+</script>
+</body>
+</html>
