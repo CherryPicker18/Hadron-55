@@ -172,7 +172,7 @@ def process_file(input_path, output_path, log_fn):
 class Adron55App(tk.Tk):
     def __init__(self):
         super().__init__()
-        self.title("ADRON-55 — Обработка данных космических лучей")
+        self.title("HADRON-55 — Обработка данных космических лучей")
         self.geometry("780x580")
         self.resizable(True, True)
         self.configure(bg="#1a1a2e")
@@ -182,7 +182,7 @@ class Adron55App(tk.Tk):
         # ── Заголовок ──
         header = tk.Frame(self, bg="#16213e", pady=10)
         header.pack(fill="x")
-        tk.Label(header, text="⚛  ADRON-55", font=("Helvetica", 20, "bold"),
+        tk.Label(header, text="⚛  HADRON-55", font=("Helvetica", 20, "bold"),
                  fg="#e94560", bg="#16213e").pack()
         tk.Label(header, text="Тянь-Шаньская горная станция • Фильтрация космических частиц",
                  font=("Helvetica", 10), fg="#a8a8b3", bg="#16213e").pack()
