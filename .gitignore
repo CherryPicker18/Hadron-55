@@ -221,3 +221,6 @@ __marimo__/
 # Testing
 dat-files-for-testing-input/
 dat-files-for-testing-output/
+tests/*.dat
+tests/*.zip
+tests/January/
