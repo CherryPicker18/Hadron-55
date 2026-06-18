@@ -1,7 +1,7 @@
 <!DOCTYPE html>
-<!-- saved from url=(0044)file:///C:/Users/User/Downloads/index_4.html -->
-<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-
+<html lang="en">
+<head>
+<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>HADRON-55 — Cosmic Ray Research Station</title>
 <style>
@@ -571,18 +571,18 @@
 
 <!-- NAV -->
 <nav>
-  <a class="nav-logo" href="file:///C:/Users/User/Downloads/index_4.html#">⚛ HADRON-55</a>
+  <a class="nav-logo" href="#">⚛ HADRON-55</a>
   <ul class="nav-links">
-    <li><a href="file:///C:/Users/User/Downloads/index_4.html#about" data-i18n="nav_about">About</a></li>
-    <li><a href="file:///C:/Users/User/Downloads/index_4.html#pipeline" data-i18n="nav_pipeline">Pipeline</a></li>
-    <li><a href="file:///C:/Users/User/Downloads/index_4.html#demo" data-i18n="nav_filter">Filter</a></li>
-    <li><a href="file:///C:/Users/User/Downloads/index_4.html#team" data-i18n="nav_team">Team</a></li>
+    <li><a href="#about" data-i18n="nav_about">About</a></li>
+    <li><a href="#pipeline" data-i18n="nav_pipeline">Pipeline</a></li>
+    <li><a href="#demo" data-i18n="nav_filter">Filter</a></li>
+    <li><a href="#team" data-i18n="nav_team">Team</a></li>
     <li><a href="https://github.com/CherryPicker18/Hadron-55" target="_blank">GitHub ↗</a></li>
   </ul>
   <div class="lang-switcher">
-    <button class="lang-btn active" onclick="setLang(&#39;en&#39;)">EN</button>
-    <button class="lang-btn" onclick="setLang(&#39;ru&#39;)">RU</button>
-    <button class="lang-btn" onclick="setLang(&#39;kz&#39;)">KZ</button>
+    <button class="lang-btn active" onclick="setLang('en')">EN</button>
+    <button class="lang-btn" onclick="setLang('ru')">RU</button>
+    <button class="lang-btn" onclick="setLang('kz')">KZ</button>
   </div>
 </nav>
 
@@ -592,7 +592,7 @@
   <h1>HADRON<span>-55</span></h1>
   <p class="hero-sub" data-i18n="hero_sub">Cosmic Ray Data Processing System</p>
   <p class="hero-desc" data-i18n="hero_desc">
-    Automated filtering and cleaning of particle detector events from the Hadron-55 installation. 
+    Automated filtering and cleaning of particle detector events from the Hadron-55 installation.
     Separates physical cosmic-ray signals from noise, calibration events, and empty scintillator readings.
   </p>
 
@@ -612,7 +612,7 @@
   </div>
 
   <div class="hero-cta">
-    <a class="btn-primary" href="file:///C:/Users/User/Downloads/index_4.html#demo" data-i18n="btn_run">▶ Run Filter</a>
+    <a class="btn-primary" href="#demo" data-i18n="btn_run">▶ Run Filter</a>
     <a class="btn-ghost" href="https://github.com/CherryPicker18/Hadron-55" target="_blank" data-i18n="btn_github">View on GitHub</a>
   </div>
 
@@ -625,9 +625,9 @@
     <p class="section-label">About the Installation</p>
     <h2 class="section-title">What is Hadron-55?</h2>
     <p class="section-body">
-      Hadron-55 is a scientific installation at the Tien Shan High-Mountain Cosmic Ray Station 
-      operated by the Lebedev Physical Institute. It continuously registers the flux of cosmic 
-      particles arriving from deep space, capturing extensive air shower (EAS) events created 
+      Hadron-55 is a scientific installation at the Tien Shan High-Mountain Cosmic Ray Station
+      operated by the Lebedev Physical Institute. It continuously registers the flux of cosmic
+      particles arriving from deep space, capturing extensive air shower (EAS) events created
       by high-energy particles in the atmosphere.
     </p>
 
@@ -635,28 +635,28 @@
       <div class="about-card">
         <div class="about-card-icon">🛰️</div>
         <h3>Scintillation Detectors</h3>
-        <p>25 channels across back, front, left, middle and right sectors — each recording particle 
+        <p>25 channels across back, front, left, middle and right sectors — each recording particle
         flux at high and low sensitivity. Raw data arrives as .dat files with timestamped event blocks.</p>
       </div>
       <div class="about-card">
         <div class="about-card-icon">🔬</div>
         <h3>Event Structure</h3>
-        <p>Each event block starts with |EVENT: and ends with #. Inside: arrays of integer counts 
-        per detector channel. Physical events show non-zero scintillator readings — noise events show 
+        <p>Each event block starts with |EVENT: and ends with #. Inside: arrays of integer counts
+        per detector channel. Physical events show non-zero scintillator readings — noise events show
         near-zero values across all channels.</p>
       </div>
       <div class="about-card">
         <div class="about-card-icon">⚡</div>
         <h3>Noise Problem</h3>
-        <p>Raw data contains outlier spikes, calibration blocks, isolated single-sample noise, 
-        and empty "phantom" events. This system identifies and removes them, preserving only 
+        <p>Raw data contains outlier spikes, calibration blocks, isolated single-sample noise,
+        and empty "phantom" events. This system identifies and removes them, preserving only
         physically meaningful cosmic-ray detections.</p>
       </div>
       <div class="about-card">
         <div class="about-card-icon">📦</div>
         <h3>Output</h3>
-        <p>Filtered .dat files with identical naming — one output file per input file. 
-        Cleaned events retain their original structure; outlier values are replaced by 
+        <p>Filtered .dat files with identical naming — one output file per input file.
+        Cleaned events retain their original structure; outlier values are replaced by
         context-aware interpolation.</p>
       </div>
     </div>
@@ -669,7 +669,7 @@
     <p class="section-label">Data Pipeline</p>
     <h2 class="section-title">How filtering works</h2>
     <p class="section-body">
-      Four-stage processing pipeline. Each stage runs sequentially on every event block 
+      Four-stage processing pipeline. Each stage runs sequentially on every event block
       in every .dat file found in the input directory.
     </p>
 
@@ -712,12 +712,12 @@
     <p class="section-label">Filter Demo</p>
     <h2 class="section-title">Process your data</h2>
     <p class="section-body">
-      Upload a .dat file to see the filtering pipeline in action. 
+      Upload a .dat file to see the filtering pipeline in action.
       The processor runs entirely in your browser — no data is sent to any server.
     </p>
 
     <div class="demo-box">
-      <div class="demo-upload" id="dropZone" onclick="document.getElementById(&#39;fileInput&#39;).click()">
+      <div class="demo-upload" id="dropZone" onclick="document.getElementById('fileInput').click()">
         <div class="demo-upload-icon">📂</div>
         <p>Drop a <span>.dat file</span> here or click to browse</p>
         <p style="margin-top:0.5rem; font-size:0.7rem;">Files must follow 6-digit naming convention (e.g. 210516.dat)</p>
@@ -739,17 +739,17 @@
         <div class="team-avatar">AB</div>
         <div>
           <p class="team-name">Alisher Baitas</p>
-          <p class="team-role">Interface &amp; Integration</p>
-          <p class="team-desc">GUI development, pipeline integration, repository architecture. 
-          Student at Tomorrow School — peer-to-peer AI &amp; programming school, Astana Hub.</p>
+          <p class="team-role">Interface & Integration</p>
+          <p class="team-desc">GUI development, pipeline integration, repository architecture.
+          Student at Tomorrow School — peer-to-peer AI & programming school, Astana Hub.</p>
         </div>
       </div>
       <div class="team-card">
         <div class="team-avatar">HN</div>
         <div>
           <p class="team-name">Hanni</p>
-          <p class="team-role">Signal Processing &amp; Algorithms</p>
-          <p class="team-desc">Core filtering algorithms: outlier detection, scintillator screening, 
+          <p class="team-role">Signal Processing & Algorithms</p>
+          <p class="team-desc">Core filtering algorithms: outlier detection, scintillator screening,
           event classification. Python implementation based on Hadron-55 detector physics.</p>
         </div>
       </div>
@@ -877,7 +877,6 @@ function processFile(file) {
       else if (line.trim() === '#' && inside) {
         block.push(line);
         events++;
-        // Simple check: look for scinti lines
         const scintiLines = block.filter(l => l.includes('scinti'));
         const hasSignal = scintiLines.some(l => {
           const nums = l.split(':').slice(2).join('').trim().split(/\s+/).map(Number).filter(n => !isNaN(n));
@@ -956,7 +955,6 @@ function setLang(lang) {
   document.querySelector(`.lang-btn[onclick="setLang('${lang}')"]`).classList.add('active');
   document.documentElement.lang = lang;
 }
-
 </script>
 </body>
 </html>
