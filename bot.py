@@ -27,13 +27,13 @@ TARGET_LABELS = [
     "front_3 : high sensitivity :", "front_g : high sensitivity :",
     "left_1 : high sensitivity :", "left_2 : high sensitivity :",
     "left_3 : high sensitivity :",
-    # "left_4 : high sensitivity :",  # not present in all datasets
+    "left_4 : high sensitivity :",
     "left_g : high sensitivity :",
     "middle_1 : high sensitivity :", "middle_2 : high sensitivity :",
     "middle_3 : high sensitivity :",
     "right_1 : high sensitivity :", "right_2 : high sensitivity :",
     "right_3 : high sensitivity :",
-    # "right_4 : high sensitivity :",  # not present in all datasets
+    "right_4 : high sensitivity :",
     "right_g : high sensitivity :",
 ]
 
